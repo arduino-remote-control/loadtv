@@ -10,7 +10,7 @@ class FoxSpider(Spider):
     allowed_domains = ["www.foxplaybrasil.com.br"]
 
     def start_requests(self):
-        date = datetime.datetime.today() - datetime.timedelta(days=1)
+        date = datetime.datetime.today()
         return [
             FormRequest('http://www.foxplaybrasil.com.br/listings/%s/' % date.strftime('%Y-%m-%d'), callback=self.parse)
         ]
