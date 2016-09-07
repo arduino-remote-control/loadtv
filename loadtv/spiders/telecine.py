@@ -1,7 +1,13 @@
-from scrapy.spiders import Spider
+from scrapy import Spider, FormRequest
 from scrapy.selector import Selector
+import datetime
+import time
+import logging
+import os
 
 from loadtv.items import LoadtvItem, Channel, Number
+os.environ['TZ'] = 'America/Sao_Paulo'
+time.tzset()
 
 
 class TelecineSpider(Spider):
@@ -10,15 +16,20 @@ class TelecineSpider(Spider):
     allowed_domains = [
         "telecine.globo.com/programacao",
     ]
-    start_urls = (
-        'http://www.telecine.globo.com/programacao/',
-    )
+
+    def start_requests(self):
+        logging.info('NOW: {}'.format(datetime.datetime.now()))
+        date = datetime.datetime.today()
+        url = 'http://telecine.img.estaticos.tv.br/rendered/static/grade_htmls/%s.html' % date.strftime('%d_%m_%Y')
+        logging.info('URL: \'{}\''.format(url));
+        return [
+            FormRequest(url, callback=self.parse)
+        ]
 
     def parse(self, response):
         items = []
 
-        xpath = '//*[@id="ProgramacaoCompleta"]/section'
-        shows = Selector(response).xpath(xpath)
+        shows = response.xpath('*')[0].xpath('section')
         for s in shows:
             hour = s.xpath('span/text()').extract_first()
             for i in s.xpath('ul/li'):
@@ -28,8 +39,8 @@ class TelecineSpider(Spider):
                 item['hour'] = hour
                 item['desc'] = i.xpath('article/p/text()').extract_first()
                 item['duraction'] = (int(i.xpath('@data-fim').extract_first()) - int(i.xpath('@data-inicio').extract_first()))/60
+                logging.info(item)
                 items.append(item)
-
 
         return items
 

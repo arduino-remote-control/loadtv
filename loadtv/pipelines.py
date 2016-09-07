@@ -10,6 +10,10 @@ import datetime
 from scrapy.exporters import BaseItemExporter
 from scrapy.exceptions import DropItem
 from loadtv import settings, items
+import time
+import os
+os.environ['TZ'] = 'America/Sao_Paulo'
+time.tzset()
 
 class LoadtvPipeline(BaseItemExporter):
     def open_spider(self, spider):

@@ -1,8 +1,13 @@
 from scrapy import Spider, FormRequest
 from scrapy.selector import Selector
 import datetime
+import time
+import logging
+import os
 
 from loadtv.items import LoadtvItem, Channel, Number
+os.environ['TZ'] = 'America/Sao_Paulo'
+time.tzset()
 
 class FoxSpider(Spider):
     name = "fox"
@@ -10,9 +15,12 @@ class FoxSpider(Spider):
     allowed_domains = ["www.foxplaybrasil.com.br"]
 
     def start_requests(self):
+        logging.info('NOW: {}'.format(datetime.datetime.now()))
         date = datetime.datetime.today()
+        url = 'http://www.foxplaybrasil.com.br/listings/%s/' % date.strftime('%Y-%m-%d')
+        logging.info('URL: \'{}\''.format(url));
         return [
-            FormRequest('http://www.foxplaybrasil.com.br/listings/%s/' % date.strftime('%Y-%m-%d'), callback=self.parse)
+            FormRequest(url, callback=self.parse)
         ]
 
     def parse(self, response):
@@ -39,6 +47,10 @@ class FoxSpider(Spider):
         date = datetime.datetime.now()
         dt1 = date.replace(hour=int(h1[:2]), minute=int(h1[3:]), second=0, microsecond=0)
         dt2 = date.replace(hour=int(h2[:2]), minute=int(h2[3:]), second=0, microsecond=0)
+
+        if dt1 > dt2:
+            dt2 += datetime.timedelta(days=1)
+
         return dt2 - dt1
 
     def get_channels(self):

@@ -2,10 +2,14 @@
 from scrapy import Spider, FormRequest
 import scrapy
 import datetime
+import time
+import os
 import json
+import logging
 
 from loadtv.items import LoadtvItem, Channel, Number
-
+os.environ['TZ'] = 'America/Sao_Paulo'
+time.tzset()
 
 class WarnerSpider(Spider):
     name = "warner"
@@ -13,9 +17,12 @@ class WarnerSpider(Spider):
     allowed_domains = ["www.warnerchannel.com"]
 
     def start_requests(self):
+        logging.info('NOW: {}'.format(datetime.datetime.now()))
         date = datetime.datetime.today()
+        url = 'http://www.warnerchannel.com/apis/schedules/getday/br/%s' % date.strftime('%Y-%m-%d')
+        logging.info('URL: \'{}\''.format(url))
         return [
-            FormRequest('http://www.warnerchannel.com/apis/schedules/getday/br/%s' % date.strftime('%Y-%m-%d'), callback=self.parse)
+            FormRequest(url, callback=self.parse)
         ]
 
     def parse(self, response):
