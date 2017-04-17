@@ -1,0 +1,18 @@
+syntax = "proto3";
+package tvshowpb;
+
+message Channel {
+    string group = 1;
+    string group_title = 2;
+    string name = 3;
+    string title = 4;
+}
+
+message TvShow {
+    Channel channel = 1;
+    string desc = 2;
+    string title = 3;
+    int32 start = 4;
+    int32 end = 5;
+    int32 duraction = 6;
+}
