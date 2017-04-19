@@ -12,6 +12,8 @@ from scrapy.exceptions import DropItem
 from loadtv import settings, items
 import time
 import os
+import requests
+import json
 os.environ['TZ'] = 'America/Sao_Paulo'
 time.tzset()
 
@@ -35,8 +37,11 @@ class LoadtvPipeline(BaseItemExporter):
             item['end'] = item['start'] + datetime.timedelta(minutes=item['duraction'])
             item['channel_id'] = self.channel_info[item['name']].to_json()
 
+            url = spider.tvshow_url if spider.tvshow_url is not None else 'http://localhost:8080/import'
+            logging.info("Request to %s" % url)
+            r = requests.post(url, data=json.dumps(item.to_json()))
+
             logging.info('Item processed')
             return item
         except Exception as err:
-            logging.error('Process Item Error: %s' % err)
             raise DropItem('Process Item Error: %s' % err)
