@@ -23,8 +23,8 @@ class LoadtvItem(scrapy.Item):
             'title': self['title'],
             'desc': self['desc'],
             'duraction': self['duraction'],
-            'start': self['start'],
-            'end': self['end'],
+            'start': self['start'].isoformat(),
+            'end': self['end'].isoformat()
         }
 
 class Channel:

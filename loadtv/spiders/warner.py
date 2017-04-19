@@ -16,6 +16,10 @@ class WarnerSpider(Spider):
     title = 'Warner Bros'
     allowed_domains = ["www.warnerchannel.com"]
 
+    def __init__(self, tvshow_url=None, *args, **kargs):
+        super(WarnerSpider, self).__init__(*args, **kargs)
+        self.tvshow_url = tvshow_url
+
     def start_requests(self):
         logging.info('NOW: {}'.format(datetime.datetime.now()))
         date = datetime.datetime.today()

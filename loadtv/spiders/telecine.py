@@ -17,6 +17,10 @@ class TelecineSpider(Spider):
         "telecine.globo.com/programacao",
     ]
 
+    def __init__(self, tvshow_url=None, *args, **kargs):
+        super(TelecineSpider, self).__init__(*args, **kargs)
+        self.tvshow_url = tvshow_url
+
     def start_requests(self):
         logging.info('NOW: {}'.format(datetime.datetime.now()))
         date = datetime.datetime.today()
